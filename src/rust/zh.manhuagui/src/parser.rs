@@ -218,13 +218,13 @@ pub fn get_chapter_list(html: Node) -> Result<Vec<Chapter>> {
 			Err(_) => continue,
 		};
 
-		for ul_ref in chapt_list_div.select("ul").array() {
+		for ul_ref in chapt_list_div.select("ul").array().rev() {
 			let ul = match ul_ref.as_node() {
 				Ok(node) => node,
 				Err(_) => continue,
 			};
 
-			for li_ref in ul.select("li").array() {
+			for li_ref in ul.select("li").array().rev() {
 				let elem = match li_ref.as_node() {
 					Ok(node) => node,
 					Err(_) => continue,
@@ -239,7 +239,7 @@ pub fn get_chapter_list(html: Node) -> Result<Vec<Chapter>> {
 				let title = elem.select("a").attr("title").read();
 				let chapter_or_volume = title
 					.clone()
-					.replace(['第', '话', '卷'], "")
+					.replace(['第', '话', '話', '回', '卷'], " ")
 					.parse::<f32>()
 					.unwrap_or(index);
 				let ch = if title.contains('卷') {
@@ -270,6 +270,7 @@ pub fn get_chapter_list(html: Node) -> Result<Vec<Chapter>> {
 		}
 	}
 
+	chapters.reverse();
 	Ok(chapters)
 }
 
